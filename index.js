@@ -8,6 +8,7 @@ const { getTokenControllerInstance } = require('./src/features/token/controller'
 const { getNftControllerInstance } = require('./src/features/nft/controller')
 const { getContractControllerInstance } = require('./src/features/contract/controller')
 const { getLootBoxControllerInstance } = require('./src/features/lootBox/controller')
+const { getEscrowControllerInstance } = require('./src/features/escrow/controller')
 const { Protocol } = require('./src/services/blockchain/constants')
 const { GenericException } = require('./src/errors')
 /**
@@ -110,6 +111,11 @@ class CryptumSDK {
   get lootBox() { return this.getLootBoxController() }
   getLootBoxController() {
     return getLootBoxControllerInstance(this.config)
+  }
+
+  get escrow() { return this.getEscrowController() }
+  getEscrowController() {
+    return getEscrowControllerInstance(this.config)
   }
 }
 
