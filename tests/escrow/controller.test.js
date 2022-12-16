@@ -4,10 +4,10 @@ const { getWalletControllerInstance } = require('../../src/features/wallet/contr
 const { EscrowController } = require('../../src/features/escrow/controller')
 const { config, getWallets } = require("../wallet/constants")
 const { loadNockMocks } = require('./mocks')
-const { getTransactionControllerInstance } = require('../../src/features/transaction/controller')
 
 describe.only('Escrow Controller Tests', () => {
-    let wallet1, wallet2, escrowFactoryAddress;
+    let wallet1, wallet2, 
+    escrowFactoryAddress = '0xaaaaaaaaaaaaaaaaaaaaa'
     const escrowAddress = '0xbbbbbbbbbbbbbbbbbbbbb'
     const tokenAddress = '0xcccccccccccccccccccc'
     const releaseDate = '1/1/2015'
@@ -21,17 +21,6 @@ describe.only('Escrow Controller Tests', () => {
     })
     after(() => {
         nock.isDone();
-    });
-
-    it('should deploy escrow', async () => {
-      const data = {
-        wallet: wallet1,
-        protocol: 'ETHEREUM',
-      }
-      const escrow = new EscrowController(config)
-      const { hash } = await escrow.deploy(data)
-      assert.include(hash, '0x');
-      ({ address: escrowFactoryAddress } = await getTransactionControllerInstance(config).getProxyAddressByHash({ hash, protocol: 'ETHEREUM' }))
     });
 
     it('should deploy date escrow', async () => {

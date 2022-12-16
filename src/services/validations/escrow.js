@@ -1,26 +1,5 @@
-const { GenericException } = require("../../errors")
 const InvalidException = require("../../errors/InvalidException")
-const BigNumber = require('bignumber.js')
 const { Protocol } = require("../blockchain/constants")
-
-module.exports.validateEscrowDeploy = ({
-  protocol, 
-  wallet, 
-  trustedForwarders
-}) => {
-  if (!wallet) {
-    throw new InvalidException('Invalid wallet')
-  }
-  if (trustedForwarders && (!Array.isArray(trustedForwarders) || !trustedForwarders.length)) {
-    throw new GenericException(
-      'Invalid parameter trustedForwarders, it should be an array with length larger than 0',
-      'InvalidTypeException'
-    )
-  }
-  if (![Protocol.BSC, Protocol.CELO, Protocol.ETHEREUM, Protocol.AVAXCCHAIN, Protocol.POLYGON].includes(protocol)) {
-    throw new InvalidException('Invalid protocol')
-  }
-}
 
 module.exports.validateDateEscrowDeploy = ({
   protocol,

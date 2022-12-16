@@ -1,6 +1,5 @@
 # Loot Boxes
 
-- [Deploy](#deploy)
 - [Deploy Date Escrow](#deploy-date-escrow)
 - [Get Deposits](#get-deposits)
 - [Get ERC20 Deposits](#get-erc20-deposits)
@@ -16,25 +15,6 @@
 - [Withdraw ERC1155](#withdraw-erc1155)
 
 Check out the in-depth guide [here](https://doc.cryptum.io/main/for-developers/sdk-integration-guides/escrows) to see the workflow of the escrow
-
-## Deploy
-
-#### `sdk.escrow.deploy(opts)`
-
-Deploy an escrow factory smart contract- `opts.wallet` (Wallet)(**required**) - wallet owner of date escrows
-
-- `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
-- `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.trustedForwarders` (string[]) - array of addresses to be set as trusted forwarders (custom gasless trusted forwarder addresses).
-
-Examples:
-
-```js
-let { hash } = await sdk.escrow.deploy({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  wallet,
-})
-```
 
 ## Deploy Date Escrow
 

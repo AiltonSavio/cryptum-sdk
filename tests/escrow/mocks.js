@@ -4,17 +4,6 @@ const axiosApi = new AxiosApi(config)
 const baseUrl = axiosApi.getBaseUrl(config.environment)
 
 exports.loadNockMocks = (nock, [wallet1, wallet2]) => {
-  nock(baseUrl).post(`/contract/escrow/deploy?protocol=ETHEREUM`, {
-    defaultAdmin: wallet1.address,
-  }).reply(200, {
-    from: wallet1.address,
-    chainId: 4,
-    nonce: 1,
-    gasPrice: '0x1000000',
-    to: '',
-    gasLimit: '0x1000000',
-  }).persist()
-
   nock(baseUrl).get(`/transaction/0xfffffffffffffffffffff/proxy?protocol=ETHEREUM`).reply(200, {
     address: '0xaaaaaaaaaaaaaaaaaaaaa'
   }).persist()

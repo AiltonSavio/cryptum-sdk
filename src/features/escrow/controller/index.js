@@ -7,48 +7,10 @@ const Interface = require('./interface')
 const { getTransactionControllerInstance } = require('../../transaction/controller')
 const { SignedTransaction, TransactionType } = require('../../transaction/entity')
 const { signCeloTx } = require('../../../services/blockchain/celo')
-const { validateEscrowDeploy, validateDateEscrowDeploy, validateDateEscrowGetDepositsOf, validateDateEscrowGetDepositsOfERC, validateDateEscrowDeposit, validateDateEscrowDepositERC20, validateDateEscrowDepositERC721, validateDateEscrowDepositERC1155, validateDateEscrowWithdraw, validateDateEscrowWithdrawERC, validateDateEscrowsGet } = require('../../../services/validations/escrow')
+const { validateDateEscrowDeploy, validateDateEscrowGetDepositsOf, validateDateEscrowGetDepositsOfERC, validateDateEscrowDeposit, validateDateEscrowDepositERC20, validateDateEscrowDepositERC721, validateDateEscrowDepositERC1155, validateDateEscrowWithdraw, validateDateEscrowWithdrawERC, validateDateEscrowsGet } = require('../../../services/validations/escrow')
 
 
 class Controller extends Interface {
-  /**
-   * Deploy escrow factory
-   * @param {import('../entity').DeployEscrowFactoryInput} input
-   * @returns {Promise<import('../../transaction/entity').TransactionResponse>}
-   */
-  async deploy(input) {
-    const tc = getTransactionControllerInstance(this.config)
-    const { protocol, wallet, trustedForwarders } = input
-		validateEscrowDeploy(input)
-    const data = { defaultAdmin: wallet.address, trustedForwarders }
-
-    const rawTransaction = await makeRequest(
-      {
-        method: 'post',
-        url: `/contract/escrow/deploy?protocol=${protocol}`,
-        body: data, config: this.config
-      })
-
-    let signedTx;
-    switch (protocol) {
-      case Protocol.CELO:
-        signedTx = await signCeloTx(rawTransaction, wallet.privateKey)
-        break;
-      case Protocol.ETHEREUM:
-      case Protocol.BSC:
-      case Protocol.POLYGON:
-      case Protocol.AVAXCCHAIN:
-        signedTx = signEthereumTx(rawTransaction, protocol, wallet.privateKey, this.config.environment)
-        break;
-      default:
-        throw new InvalidException('Unsupported protocol')
-    }
-    return await tc.sendTransaction(
-      new SignedTransaction({
-        signedTx, protocol, type: TransactionType.ESCROW_FACTORY_DEPLOY
-      }))
-  }
-
   /**
    * Deploy date escrow
    * @param {import('../entity').DeployDateEscrowInput} input
