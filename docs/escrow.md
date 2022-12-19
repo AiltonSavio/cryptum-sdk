@@ -1,68 +1,65 @@
-# Loot Boxes
+# Escrows
 
-- [Deploy Date Escrow](#deploy-date-escrow)
+- [Deploy Escrow](#deploy-escrow)
+- [Get Escrows](#get-escrows)
 - [Get Deposits](#get-deposits)
-- [Get ERC20 Deposits](#get-erc20-deposits)
-- [Get ERC721 Deposits](#get-erc721-deposits)
-- [Get ERC1155 Deposits](#get-erc1155-deposits)
+- [Approve](#approve)
 - [Deposit](#deposit)
-- [Deposit ERC20](#deposit-erc20)
-- [Deposit ERC721](#deposit-erc721)
-- [Deposit ERC1155](#deposit-erc1155)
 - [Withdraw](#withdraw)
-- [Withdraw ERC20](#withdraw-erc20)
-- [Withdraw ERC721](#withdraw-erc721)
-- [Withdraw ERC1155](#withdraw-erc1155)
 
 Check out the in-depth guide [here](https://doc.cryptum.io/main/for-developers/sdk-integration-guides/escrows) to see the workflow of the escrow
 
-## Deploy Date Escrow
+## Deploy Escrow
 
-#### `sdk.escrow.deployDateEscrow(opts)`
+#### `sdk.escrow.deployEscrow(opts)`
 
-Deploy a date conditional escrow contract
+Deploy an escrow contract.
 
 - `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
 - `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowFactoryAddress` (string) (**required**) - address of the escrow factory contract
+- `opts.type` (string) (**required**) - type of escrow to deploy. Currently only `date` is supported
 
 Examples:
 
 ```js
-let { hash } = await sdk.escrow.deployDateEscrow({
+let { hash } = await sdk.escrow.deployEscrow({
   protocol: 'BSC', // Only EVM protocols are supported at the moment
   wallet,
-  escrowFactoryAddress: '0xa4...E17', // Address of the escrow factory
+  type: 'date',
 })
 ```
 
-## Get Date Escrows
+## Get Escrows
 
-#### `sdk.escrow.getDateEscrows(opts)`
+#### `sdk.escrow.getEscrows(opts)`
 
-Gets all date escrows addresses of a wallet
+Gets all escrow addresses of a wallet.
 
 - `opts.wallet` (Wallet)(**required**) - wallet owner of date escrows
 - `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowFactoryAddress` (string) (**required**) - address of the escrow factory contract
+- `opts.type` (string) (**required**) - type of escrow to deploy. Currently only `date` is supported
 
 Examples:
 
 ```js
-let { hash } = await sdk.escrow.getDateEscrows({
+const escrows = await sdk.escrow.getEscrows({
   protocol: 'BSC', // Only EVM protocols are supported at the moment
   wallet,
-  escrowFactoryAddress: '0xa4...E17',
+  type: 'date',
 })
 ```
 
 ## Get Deposits
 
-Gets deposits of the blockchain native token on escrow for a payee
+Gets deposits on escrow for a payee.
+
+#### `sdk.escrow.getDepositsOf(opts)`
 
 - `opts.payee` (string)(**required**) - address to receive amount on escrow
 - `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
 - `opts.escrowAddress` (string) (**required**) - address of the escrow contract
+- `opts.tokenAddress` (string) - address of the token. Leave empty for native token
+- `opts.tokenType` ("Native", "ERC721" | "ERC1155" | "ERC20") - type of the token that is being added as a prize.
 
 Examples:
 
@@ -71,79 +68,51 @@ let { hash } = await sdk.escrow.getDepositsOf({
   protocol: 'BSC', // Only EVM protocols are supported at the moment
   payee: '0xa4...E17',
   escrowAddress: '0xa4...E17',
+  tokenAddress: '0xa4...E17',
+  tokenType: 'ERC1155', // 'ERC20','ERC721' or 'ERC1155'
 })
 ```
 
-## Get ERC20 Deposits
+## Approve
 
-Gets deposits of an ERC20 token on escrow for a payee
+#### `sdk.escrow.approve(opts)`
 
-- `opts.payee` (string)(**required**) - address to receive amount on escrow
+Approve the escrow contract to use your tokens.
+
+- `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
 - `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowAddress` (string) (**required**) - address of the escrow contract
-- `opts.tokenAddress` (string) (**required**) - address of ERC20 token
+- `opts.escrowAddress` (string) (**required**) - address of the escrow contract.
+- `opts.tokenAddress` (string) (**required**) - address of the token to be used as a prize.
+- `opts.tokenType` ("ERC721" | "ERC1155" | "ERC20") - type of the token that is being added as a prize.
 
 Examples:
 
 ```js
-let { hash } = await sdk.escrow.getDepositsOfERC20({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  payee: '0xa4...E17',
-  escrowAddress: '0xa4...E17',
+await sdk.escrow.approve({
+  wallet,
+  escrowAddress: '0xa75b...15d8',
+  protocol: 'BSC',
   tokenAddress: '0xa4...E17',
-})
-```
-
-## Get ERC721 Deposits
-
-Gets deposits of an ERC721 token on escrow for a payee
-
-- `opts.payee` (string)(**required**) - address to receive amount on escrow
-- `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowAddress` (string) (**required**) - address of the escrow contract
-- `opts.tokenAddress` (string) (**required**) - address of ERC721 token
-
-Examples:
-
-```js
-let { hash } = await sdk.escrow.getDepositsOfERC20({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  payee: '0xa4...E17',
-  escrowAddress: '0xa4...E17',
-  tokenAddress: '0xa4...E17',
-})
-```
-
-## Get ERC1155 Deposits
-
-Gets deposits of an ERC1155 token on escrow for a payee
-
-- `opts.payee` (string)(**required**) - address to receive amount on escrow
-- `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowAddress` (string) (**required**) - address of the escrow contract
-- `opts.tokenAddress` (string) (**required**) - address of ERC1155 token
-
-Examples:
-
-```js
-let { hash } = await sdk.escrow.getDepositsOfERC20({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  payee: '0xa4...E17',
-  escrowAddress: '0xa4...E17',
-  tokenAddress: '0xa4...E17',
+  tokenType: 'ERC1155', // 'ERC20','ERC721' or 'ERC1155'
 })
 ```
 
 ## Deposit
 
-Deposit native token on escrow for a payee
+#### `sdk.escrow.deposit(opts)`
+
+Deposit tokens on escrow for a payee.
 
 - `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
 - `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
 - `opts.escrowAddress` (string) (**required**) - address of the escrow contract
 - `opts.payee` (string) (**required**) - destination address of the funds
-- `opts.amount` (string) (**required**) - amount to deposit
-- `opts.releaseDate` (string) (**required**) - release date of the funds
+- `opts.tokenAddress` (string) - address of the token to be used as a prize. Leave empty for 'Native' tokens
+- `opts.type` ("date") (**required**) - type of escrow to deploy. Currently only `date` is supported
+- `opts.tokenType` ("Native" | "ERC721" | "ERC1155" | "ERC20") - type of the token that is being added as a prize.
+- `opts.tokenId` (string) - tokenId of the content (if content is an ERC-721 token).
+- `opts.amount` (string) - amount of tokens to be approved (if content is an ERC20 token).
+- `opts.releaseDate` (string) - release date of the funds.
 
 Examples:
 
@@ -152,100 +121,28 @@ let { hash } = await sdk.escrow.deposit({
   protocol: 'BSC', // Only EVM protocols are supported at the moment
   wallet,
   escrowAddress: '0xa4...E17',
+  type: 'date',
   payee: '0xa4...E17',
-  amount: '100000000000000000', // 0.1 ETH
-  releaseDate: '2025-1-1T00:00:00.000Z',
-})
-```
-
-## Deposit ERC20
-
-Deposit ERC20 token on escrow for a payee
-
-- `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
-- `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowAddress` (string) (**required**) - address of the escrow contract
-- `opts.payee` (string) (**required**) - destination address of the funds
-- `opts.amount` (string) (**required**) - amount to deposit
-- `opts.releaseDate` (string) (**required**) - release date of the funds
-- `opts.tokenAddress` (string) (**required**) - address of ERC20 token
-
-Examples:
-
-```js
-let { hash } = await sdk.escrow.depositERC20({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  wallet,
-  escrowAddress: '0xa4...E17',
-  payee: '0xa4...E17',
-  amount: '100000000000000000', // 0.1 ETH
-  releaseDate: '2025-1-1T00:00:00.000Z',
   tokenAddress: '0xa4...E17',
-})
-```
-
-## Deposit ERC721
-
-Deposit ERC721 token on escrow for a payee
-
-- `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
-- `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowAddress` (string) (**required**) - address of the escrow contract
-- `opts.payee` (string) (**required**) - destination address of the funds
-- `opts.tokenId` (string) (**required**) - id of the token to deposit
-- `opts.releaseDate` (string) (**required**) - release date of the funds
-- `opts.tokenAddress` (string) (**required**) - address of ERC721 token
-
-Examples:
-
-```js
-let { hash } = await sdk.escrow.depositERC721({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  wallet,
-  escrowAddress: '0xa4...E17',
-  payee: '0xa4...E17',
-  tokenId: '0',
-  releaseDate: '2025-1-1T00:00:00.000Z',
-  tokenAddress: '0xa4...E17',
-})
-```
-
-## Deposit ERC1155
-
-Deposit ERC1155 token on escrow for a payee
-
-- `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
-- `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowAddress` (string) (**required**) - address of the escrow contract
-- `opts.payee` (string) (**required**) - destination address of the funds
-- `opts.tokenId` (string) (**required**) - id of the token to deposit
-- `opts.amount` (string) (**required**) - amount to deposit
-- `opts.releaseDate` (string) (**required**) - release date of the funds
-- `opts.tokenAddress` (string) (**required**) - address of ERC1155 token
-
-Examples:
-
-```js
-let { hash } = await sdk.escrow.depositERC1155({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  wallet,
-  escrowAddress: '0xa4...E17',
-  payee: '0xa4...E17',
-  tokenId: '0',
-  amount: '100000000000000000', // 0.1 ETH
-  releaseDate: '2025-1-1T00:00:00.000Z',
-  tokenAddress: '0xa4...E17',
+  tokenType: 'ERC1155', // 'Native', 'ERC20','ERC721' or 'ERC1155'
+  tokenId, // For 'ERC721' and 'ERC1155'
+  amount, // For 'Native', 'ERC20' and 'ERC1155'
+  releaseDate: '2025-1-1T00:00:00.000Z', // For 'date' conditional escrows
 })
 ```
 
 ## Withdraw
 
-Withdraw native token funds from escrow
+#### `sdk.escrow.withdraw(opts)`
+
+Withdraw funds from escrow.
 
 - `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
 - `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
 - `opts.escrowAddress` (string) (**required**) - address of the escrow contract
 - `opts.payee` (string) (**required**) - destination address of the funds
+- `opts.tokenAddress` (string) - address of the token to be used as a prize. Leave empty for 'Native' tokens
+- `opts.tokenType` ("Native" | "ERC721" | "ERC1155" | "ERC20") - type of the token that is being added as a prize.
 
 Examples:
 
@@ -255,71 +152,7 @@ let { hash } = await sdk.escrow.withdraw({
   wallet,
   escrowAddress: '0xa4...E17',
   payee: '0xa4...E17',
-})
-```
-
-## Withdraw ERC20
-
-Withdraw ERC20 token funds from escrow
-
-- `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
-- `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowAddress` (string) (**required**) - address of the escrow contract
-- `opts.payee` (string) (**required**) - destination address of the funds
-- `opts.tokenAddress` (string) (**required**) - address of ERC20 token
-
-Examples:
-
-```js
-let { hash } = await sdk.escrow.withdrawERC20({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  wallet,
-  escrowAddress: '0xa4...E17',
-  payee: '0xa4...E17',
   tokenAddress: '0xa4...E17',
-})
-```
-
-## Withdraw ERC721
-
-Withdraw ERC721 token funds from escrow
-
-- `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
-- `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowAddress` (string) (**required**) - address of the escrow contract
-- `opts.payee` (string) (**required**) - destination address of the funds
-- `opts.tokenAddress` (string) (**required**) - address of ERC721 token
-
-Examples:
-
-```js
-let { hash } = await sdk.escrow.withdrawERC721({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  wallet,
-  escrowAddress: '0xa4...E17',
-  payee: '0xa4...E17',
-  tokenAddress: '0xa4...E17',
-})
-```
-
-## Withdraw ERC1155
-
-Withdraw ERC1155 token funds from escrow
-
-- `opts.wallet` (Wallet)(**required**) - wallet to sign the transaction with
-- `opts.protocol` (string) (**required**) - [EVMs only](../protocols.md#ethereum-based-blockchains-evms).
-- `opts.escrowAddress` (string) (**required**) - address of the escrow contract
-- `opts.payee` (string) (**required**) - destination address of the funds
-- `opts.tokenAddress` (string) (**required**) - address of ERC1155 token
-
-Examples:
-
-```js
-let { hash } = await sdk.escrow.withdrawERC1155({
-  protocol: 'BSC', // Only EVM protocols are supported at the moment
-  wallet,
-  escrowAddress: '0xa4...E17',
-  payee: '0xa4...E17',
-  tokenAddress: '0xa4...E17',
+  tokenType: 'ERC1155', // 'Native', 'ERC20','ERC721' or 'ERC1155'
 })
 ```
