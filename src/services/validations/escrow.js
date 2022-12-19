@@ -3,14 +3,10 @@ const { Protocol } = require("../blockchain/constants")
 
 module.exports.validateDateEscrowDeploy = ({
   protocol,
-  wallet, 
-  escrowFactoryAddress
+  wallet
 }) => {
   if (!wallet) {
     throw new InvalidException('Invalid wallet')
-  }
-  if (!escrowFactoryAddress || typeof escrowFactoryAddress !== 'string') {
-    throw new InvalidException('Invalid escrowFactoryAddress')
   }
   if (![Protocol.BSC, Protocol.CELO, Protocol.ETHEREUM, Protocol.AVAXCCHAIN, Protocol.POLYGON].includes(protocol)) {
     throw new InvalidException('Invalid protocol')

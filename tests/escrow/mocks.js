@@ -14,7 +14,6 @@ exports.loadNockMocks = (nock, [wallet1, wallet2]) => {
 
   nock(baseUrl).post(`/contract/escrow/deployDateEscrow?protocol=ETHEREUM`, {
     from: wallet1.address,
-    escrowFactoryAddress: '0xaaaaaaaaaaaaaaaaaaaaa',
   }).reply(200, {
     from: wallet1.address,
     chainId: 4,

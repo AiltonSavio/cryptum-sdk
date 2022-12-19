@@ -18,14 +18,14 @@ class Controller extends Interface {
    */
 	async deployDateEscrow(input) {
 		const tc = getTransactionControllerInstance(this.config)
-		const { protocol, wallet, escrowFactoryAddress } = input
+		const { protocol, wallet } = input
 		validateDateEscrowDeploy(input)
 
 		const rawTransaction = await makeRequest(
 			{
 				method: 'post', url: `/contract/escrow/deployDateEscrow?protocol=${protocol}`,
 				config: this.config,
-				body: { escrowFactoryAddress, from: wallet.address }
+				body: { from: wallet.address }
 			}
 		)
 

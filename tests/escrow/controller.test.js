@@ -25,7 +25,6 @@ describe.only('Escrow Controller Tests', () => {
 
     it('should deploy date escrow', async () => {
       const data = {
-        escrowFactoryAddress,
         wallet: wallet1,
         protocol: 'ETHEREUM',
       }
