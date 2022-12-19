@@ -6,8 +6,7 @@ const { config, getWallets } = require("../wallet/constants")
 const { loadNockMocks } = require('./mocks')
 
 describe.only('Escrow Controller Tests', () => {
-    let wallet1, wallet2, 
-    escrowFactoryAddress = '0xaaaaaaaaaaaaaaaaaaaaa'
+    let wallet1, wallet2
     const escrowAddress = '0xbbbbbbbbbbbbbbbbbbbbb'
     const tokenAddress = '0xcccccccccccccccccccc'
     const releaseDate = '1/1/2015'
@@ -27,28 +26,30 @@ describe.only('Escrow Controller Tests', () => {
       const data = {
         wallet: wallet1,
         protocol: 'ETHEREUM',
+        type: 'date',
       }
       const controller = new EscrowController(config)
-      const { hash } = await controller.deployDateEscrow(data)
+      const { hash } = await controller.deployEscrow(data)
       assert.include(hash, '0x');
     })
 
-    it('should get date escrows addresses', async () => {
+    it('should get escrows addresses', async () => {
       const data = {
-        escrowFactoryAddress,
         wallet: wallet1,
         protocol: 'ETHEREUM',
+        type: 'date',
       }
       const controller = new EscrowController(config)
-      const result = await controller.getDateEscrows(data)
+      const result = await controller.getEscrows(data)
       assert.equal(result[0], '0xbbbbbbbbbbbbbbbbbbbbb');
     })
 
     it('should get deposits of native tokens on escrow', async () => {
       const data = {
-        escrowAddress,
         payee: wallet2.address,
         protocol: 'ETHEREUM',
+        escrowAddress,
+        tokenType: 'Native'
       }
       const controller = new EscrowController(config)
       const result = await controller.getDepositsOf(data)
@@ -58,51 +59,95 @@ describe.only('Escrow Controller Tests', () => {
 
     it('should get deposits of ERC20 tokens on escrow', async () => {
       const data = {
-        escrowAddress,
         payee: wallet2.address,
-        tokenAddress,
         protocol: 'ETHEREUM',
+        escrowAddress,
+        tokenAddress,
+        tokenType: 'ERC20'
       }
       const controller = new EscrowController(config)
-      const result = await controller.getDepositsOfERC20(data)
+      const result = await controller.getDepositsOf(data)
       assert.equal(result[0].amount, amount);
       assert.equal(result[0].date, releaseDate);
     })
 
     it('should get deposits of ERC721 tokens on escrow', async () => {
       const data = {
-        escrowAddress,
         payee: wallet2.address,
-        tokenAddress,
         protocol: 'ETHEREUM',
+        escrowAddress,
+        tokenAddress,
+        tokenType: 'ERC721'
       }
       const controller = new EscrowController(config)
-      const result = await controller.getDepositsOfERC721(data)
+      const result = await controller.getDepositsOf(data)
       assert.equal(result[0].amount, amount);
       assert.equal(result[0].date, releaseDate);
     })
 
     it('should get deposits of ERC1155 tokens on escrow', async () => {
       const data = {
-        escrowAddress,
         payee: wallet2.address,
-        tokenAddress,
         protocol: 'ETHEREUM',
+        escrowAddress,
+        tokenAddress,
+        tokenType: 'ERC1155'
       }
       const controller = new EscrowController(config)
-      const result = await controller.getDepositsOfERC1155(data)
+      const result = await controller.getDepositsOf(data)
       assert.equal(result[0].amount, amount);
       assert.equal(result[0].date, releaseDate);
     })
 
-    it('should deposit native tokens to escrow', async () => {
+    it('should approve ERC20 token for escrow', async () => {
       const data = {
-        escrowAddress,
-        amount,
-        releaseDate,
-        payee: wallet2.address,
         wallet: wallet1,
         protocol: 'ETHEREUM',
+        escrowAddress,
+        tokenAddress,
+        tokenType: 'ERC20'
+      }
+      const controller = new EscrowController(config)
+      const { hash } = await controller.approve(data)
+      assert.include(hash, '0x');
+    })
+
+    it('should approve ERC721 token for escrow', async () => {
+      const data = {
+        wallet: wallet1,
+        protocol: 'ETHEREUM',
+        escrowAddress,
+        tokenAddress,
+        tokenType: 'ERC721'
+      }
+      const controller = new EscrowController(config)
+      const { hash } = await controller.approve(data)
+      assert.include(hash, '0x');
+    })
+
+    it('should approve ERC1155 token for escrow', async () => {
+      const data = {
+        wallet: wallet1,
+        protocol: 'ETHEREUM',
+        escrowAddress,
+        tokenAddress,
+        tokenType: 'ERC1155'
+      }
+      const controller = new EscrowController(config)
+      const { hash } = await controller.approve(data)
+      assert.include(hash, '0x');
+    })
+
+    it('should deposit native tokens to escrow', async () => {
+      const data = {
+        wallet: wallet1,
+        protocol: 'ETHEREUM',
+        escrowAddress,
+        payee: wallet2.address,
+        tokenType: 'Native',
+        amount,
+        releaseDate,
+        type: 'date'
       }
       const controller = new EscrowController(config)
       const { hash } = await controller.deposit(data)
@@ -111,56 +156,63 @@ describe.only('Escrow Controller Tests', () => {
 
     it('should deposit ERC20 tokens to escrow', async () => {
       const data = {
-        escrowAddress,
-        amount,
-        releaseDate,
-        payee: wallet2.address,
-        tokenAddress,
         wallet: wallet1,
         protocol: 'ETHEREUM',
+        escrowAddress,
+        payee: wallet2.address,
+        tokenAddress,
+        tokenType: 'ERC20',
+        amount,
+        releaseDate,
+        type: 'date'
       }
       const controller = new EscrowController(config)
-      const { hash } = await controller.depositERC20(data)
+      const { hash } = await controller.deposit(data)
       assert.include(hash, '0x');
     })
 
     it('should deposit ERC721 tokens to escrow', async () => {
       const data = {
-        escrowAddress,
-        tokenId: amount,
-        releaseDate,
-        payee: wallet2.address,
-        tokenAddress,
         wallet: wallet1,
         protocol: 'ETHEREUM',
+        escrowAddress,
+        payee: wallet2.address,
+        tokenAddress,
+        tokenType: 'ERC721',
+        tokenId: amount,
+        releaseDate,
+        type: 'date'
       }
       const controller = new EscrowController(config)
-      const { hash } = await controller.depositERC721(data)
+      const { hash } = await controller.deposit(data)
       assert.include(hash, '0x');
     })
 
     it('should deposit ERC1155 tokens to escrow', async () => {
       const data = {
+        wallet: wallet1,
+        protocol: 'ETHEREUM',
         escrowAddress,
+        payee: wallet2.address,
+        tokenAddress,
+        tokenType: 'ERC20',
         tokenId: amount,
         amount,
         releaseDate,
-        payee: wallet2.address,
-        tokenAddress,
-        wallet: wallet1,
-        protocol: 'ETHEREUM',
+        type: 'date'
       }
       const controller = new EscrowController(config)
-      const { hash } = await controller.depositERC1155(data)
+      const { hash } = await controller.deposit(data)
       assert.include(hash, '0x');
     })
 
     it('should withdraw native tokens from escrow', async () => {
       const data = {
-        escrowAddress,
-        payee: wallet2.address,
         wallet: wallet1,
         protocol: 'ETHEREUM',
+        escrowAddress,
+        payee: wallet2.address,
+        tokenType: 'Native',
       }
       const controller = new EscrowController(config)
       const { hash } = await controller.withdraw(data)
@@ -169,40 +221,43 @@ describe.only('Escrow Controller Tests', () => {
 
     it('should withdraw ERC20 tokens from escrow', async () => {
       const data = {
+        wallet: wallet1,
+        protocol: 'ETHEREUM',
         escrowAddress,
         payee: wallet2.address,
         tokenAddress,
-        wallet: wallet1,
-        protocol: 'ETHEREUM',
+        tokenType: 'ERC20',
       }
       const controller = new EscrowController(config)
-      const { hash } = await controller.withdrawERC20(data)
+      const { hash } = await controller.withdraw(data)
       assert.include(hash, '0x');
     })
 
     it('should withdraw ERC721 tokens from escrow', async () => {
       const data = {
+        wallet: wallet1,
+        protocol: 'ETHEREUM',
         escrowAddress,
         payee: wallet2.address,
         tokenAddress,
-        wallet: wallet1,
-        protocol: 'ETHEREUM',
+        tokenType: 'ERC721',
       }
       const controller = new EscrowController(config)
-      const { hash } = await controller.withdrawERC721(data)
+      const { hash } = await controller.withdraw(data)
       assert.include(hash, '0x');
     })
 
     it('should withdraw ERC1155 tokens from escrow', async () => {
       const data = {
+        wallet: wallet1,
+        protocol: 'ETHEREUM',
         escrowAddress,
         payee: wallet2.address,
         tokenAddress,
-        wallet: wallet1,
-        protocol: 'ETHEREUM',
+        tokenType: 'ERC1155',
       }
       const controller = new EscrowController(config)
-      const { hash } = await controller.withdrawERC1155(data)
+      const { hash } = await controller.withdraw(data)
       assert.include(hash, '0x');
     })
 })
