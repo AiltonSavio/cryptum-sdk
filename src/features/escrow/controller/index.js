@@ -141,10 +141,10 @@ class Controller extends Interface {
 				url = `/contract/escrow/${escrowAddress}/approveERC20/${tokenAddress}?protocol=${protocol}`;
 				break;
 			case 'ERC721':
-				url = `/contract/escrow/${escrowAddress}/approveERC20/${tokenAddress}?protocol=${protocol}`;
+				url = `/contract/escrow/${escrowAddress}/approveERC721/${tokenAddress}?protocol=${protocol}`;
 				break;
 			case 'ERC1155':
-				url = `/contract/escrow/${escrowAddress}/approveERC20/${tokenAddress}?protocol=${protocol}`;
+				url = `/contract/escrow/${escrowAddress}/approveERC1155/${tokenAddress}?protocol=${protocol}`;
 				break;
 		}
 
